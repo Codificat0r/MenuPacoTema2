@@ -65,9 +65,9 @@ public class AgendaActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private boolean comprobarCamposLlenos() {
-        if (edtNombre.getText().toString() != "")
-            if (edtTelefono.getText().toString() != "")
-                if (edtEmail.getText().toString() != "")
+        if (edtNombre.getText().toString().length() != 0)
+            if (edtTelefono.getText().toString().length() != 0)
+                if (edtEmail.getText().toString().length() != 0)
                     return true;
         return false;
     }
@@ -85,6 +85,8 @@ public class AgendaActivity extends AppCompatActivity implements View.OnClickLis
                 bw = new BufferedWriter(osw);
                 bw.write(edtNombre.getText().toString() + "," + edtTelefono.getText().toString() + "," + edtEmail.getText().toString());
                 bw.newLine();
+                Toast.makeText(this, "Contacto guardado con éxito.", Toast.LENGTH_SHORT).show();
+                fos.close();
             } catch (Exception e) {
                 Toast.makeText(this, "Ha ocurrido un problema.", Toast.LENGTH_SHORT).show();
             }
@@ -103,6 +105,8 @@ public class AgendaActivity extends AppCompatActivity implements View.OnClickLis
             fis = new FileInputStream(file);
             isr = new InputStreamReader(fis);
             br = new BufferedReader(isr);
+            //Limpiamos el TextView antes de introducir la nueva lista.
+            txvListaContactos.setText("");
             while ((lineaLeida = br.readLine()) != null) {
                 datos = lineaLeida.split(",");
                 txvListaContactos.setText(txvListaContactos.getText().toString() + "Nombre: " + datos[0] + "\n");
@@ -110,6 +114,7 @@ public class AgendaActivity extends AppCompatActivity implements View.OnClickLis
                 txvListaContactos.setText(txvListaContactos.getText().toString() + "Email: " + datos[2] + "\n");
                 txvListaContactos.setText(txvListaContactos.getText().toString() + "-------------------");
             }
+            fis.close();
         } catch (FileNotFoundException e){
             Toast.makeText(this, "No existe un fichero de contactos todavía.", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
