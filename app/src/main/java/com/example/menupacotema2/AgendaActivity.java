@@ -65,9 +65,9 @@ public class AgendaActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private boolean comprobarCamposLlenos() {
-        if (edtNombre.getText().toString().length() != 0)
-            if (edtTelefono.getText().toString().length() != 0)
-                if (edtEmail.getText().toString().length() != 0)
+        if (edtNombre.getText().toString().trim().length() != 0)
+            if (edtTelefono.getText().toString().trim().length() != 0)
+                if (edtEmail.getText().toString().trim().length() != 0)
                     return true;
         return false;
     }
