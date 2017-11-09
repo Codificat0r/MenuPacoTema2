@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">MenuPacoTema2</string>
+    <string name="btnEjercicio1">Ejercicio 1</string>
+    <string name="btnEjercicio2">Ejercicio 2</string>
+    <string name="btnEjercicio3">Ejercicio 3</string>
+    <string name="btnEjercicio4">Ejercicio 4</string>
+    <string name="btnEjercicio5">Ejercicio 5</string>
+    <string name="btnEjercicio6">Ejercicio 6</string>
+    <string name="btnEjercicio7">Ejercicio 7</string>
+</resources>
