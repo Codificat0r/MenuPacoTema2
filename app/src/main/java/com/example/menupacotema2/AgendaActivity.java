@@ -86,7 +86,8 @@ public class AgendaActivity extends AppCompatActivity implements View.OnClickLis
                 bw.write(edtNombre.getText().toString() + "," + edtTelefono.getText().toString() + "," + edtEmail.getText().toString());
                 bw.newLine();
                 Toast.makeText(this, "Contacto guardado con éxito.", Toast.LENGTH_SHORT).show();
-                fos.close();
+                //Hay que cerrar el BufferedWriter, no el flujo principal
+                bw.close();
             } catch (Exception e) {
                 Toast.makeText(this, "Ha ocurrido un problema.", Toast.LENGTH_SHORT).show();
             }
@@ -112,7 +113,7 @@ public class AgendaActivity extends AppCompatActivity implements View.OnClickLis
                 txvListaContactos.setText(txvListaContactos.getText().toString() + "Nombre: " + datos[0] + "\n");
                 txvListaContactos.setText(txvListaContactos.getText().toString() + "Teléfono: " + datos[1] + "\n");
                 txvListaContactos.setText(txvListaContactos.getText().toString() + "Email: " + datos[2] + "\n");
-                txvListaContactos.setText(txvListaContactos.getText().toString() + "-------------------");
+                txvListaContactos.setText(txvListaContactos.getText().toString() + "-------------------" + "\n");
             }
             fis.close();
         } catch (FileNotFoundException e){
