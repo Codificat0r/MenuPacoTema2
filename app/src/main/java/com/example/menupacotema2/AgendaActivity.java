@@ -115,7 +115,7 @@ public class AgendaActivity extends AppCompatActivity implements View.OnClickLis
                 txvListaContactos.setText(txvListaContactos.getText().toString() + "Email: " + datos[2] + "\n");
                 txvListaContactos.setText(txvListaContactos.getText().toString() + "-------------------" + "\n");
             }
-            fis.close();
+            br.close();
         } catch (FileNotFoundException e){
             Toast.makeText(this, "No existe un fichero de contactos todavía.", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {

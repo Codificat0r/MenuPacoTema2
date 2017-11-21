@@ -50,13 +50,15 @@ public class PrincipalActivity extends AppCompatActivity implements View.OnClick
                 startActivity(i);
                 break;
             case R.id.btnEjercicio2:
-
+                i = new Intent(PrincipalActivity.this, AlarmasActivity.class);
+                startActivity(i);
                 break;
             case R.id.btnEjercicio3:
 
                 break;
             case R.id.btnEjercicio4:
-
+                i = new Intent(PrincipalActivity.this, VerWebActivity.class);
+                startActivity(i);
                 break;
             case R.id.btnEjercicio5:
 
