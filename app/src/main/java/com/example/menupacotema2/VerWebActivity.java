@@ -1,7 +1,10 @@
 package com.example.menupacotema2;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.renderscript.ScriptGroup;
@@ -130,32 +133,34 @@ public class VerWebActivity extends AppCompatActivity implements View.OnClickLis
         String linea;
         int codigoRespuesta;
         String respuesta;
-        if (URLUtil.isValidUrl(edtUrl.getText().toString())) {
-            try {
-                respuesta = "";
-                url = new URL(edtUrl.getText().toString());
-                huc = (HttpURLConnection) url.openConnection();
-                codigoRespuesta = huc.getResponseCode();
-                if (codigoRespuesta == HttpURLConnection.HTTP_OK) {
-                    isr = new InputStreamReader(huc.getInputStream());
-                    br = new BufferedReader(isr);
-                    while ((linea = br.readLine()) != null) {
-                        respuesta += linea;
+        if (isNetworkAvailable()) {
+            if (URLUtil.isValidUrl(edtUrl.getText().toString())) {
+                try {
+                    respuesta = "";
+                    url = new URL(edtUrl.getText().toString());
+                    huc = (HttpURLConnection) url.openConnection();
+                    codigoRespuesta = huc.getResponseCode();
+                    if (codigoRespuesta == HttpURLConnection.HTTP_OK) {
+                        isr = new InputStreamReader(huc.getInputStream());
+                        br = new BufferedReader(isr);
+                        while ((linea = br.readLine()) != null) {
+                            respuesta += linea;
+                        }
+                        wbvPagina.loadData(respuesta, "text/html", "UTF-8");
+                    } else {
+                        Toast.makeText(this, "La web no pudo ser accedida: " + codigoRespuesta, Toast.LENGTH_SHORT).show();
                     }
-                    wbvPagina.loadData(respuesta, "text/html", "UTF-8");
-                } else {
-                    Toast.makeText(this, "La web no pudo ser accedida: " + codigoRespuesta, Toast.LENGTH_SHORT).show();
+                } catch (MalformedURLException e) {
+                    Toast.makeText(this, "La URL no es correcta", Toast.LENGTH_SHORT).show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
                 }
-            } catch (MalformedURLException e) {
+            } else {
                 Toast.makeText(this, "La URL no es correcta", Toast.LENGTH_SHORT).show();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
             }
-        } else {
-            Toast.makeText(this, "La URL no es correcta", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -167,150 +172,166 @@ public class VerWebActivity extends AppCompatActivity implements View.OnClickLis
         String linea;
         int codigoRespuesta;
         String respuesta;
-        if (URLUtil.isValidUrl(edtUrl.getText().toString())) {
-            try {
-                respuesta = "";
-                url = new URL(edtUrl.getText().toString());
-                huc = (HttpURLConnection) url.openConnection();
-                codigoRespuesta = huc.getResponseCode();
-                if (codigoRespuesta == HttpURLConnection.HTTP_OK) {
-                    isr = new InputStreamReader(huc.getInputStream());
-                    br = new BufferedReader(isr);
-                    while ((linea = br.readLine()) != null) {
-                        respuesta += linea;
+        if (isNetworkAvailable()) {
+            if (URLUtil.isValidUrl(edtUrl.getText().toString())) {
+                try {
+                    respuesta = "";
+                    url = new URL(edtUrl.getText().toString());
+                    huc = (HttpURLConnection) url.openConnection();
+                    codigoRespuesta = huc.getResponseCode();
+                    if (codigoRespuesta == HttpURLConnection.HTTP_OK) {
+                        isr = new InputStreamReader(huc.getInputStream());
+                        br = new BufferedReader(isr);
+                        while ((linea = br.readLine()) != null) {
+                            respuesta += linea;
+                        }
+                        crearFichero(new File(Environment.getExternalStorageDirectory(), edtNombreFichero.getText().toString()), respuesta);
+                    } else {
+                        Toast.makeText(this, "La web no pudo ser accedida: " + codigoRespuesta, Toast.LENGTH_SHORT).show();
                     }
-                    crearFichero(new File(Environment.getExternalStorageDirectory(), edtNombreFichero.getText().toString()), respuesta);
-                } else {
-                    Toast.makeText(this, "La web no pudo ser accedida: " + codigoRespuesta, Toast.LENGTH_SHORT).show();
+                } catch (MalformedURLException e) {
+                    Toast.makeText(this, "La URL no es correcta", Toast.LENGTH_SHORT).show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
-            } catch (MalformedURLException e) {
+            } else {
                 Toast.makeText(this, "La URL no es correcta", Toast.LENGTH_SHORT).show();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
-        } else {
-            Toast.makeText(this, "La URL no es correcta", Toast.LENGTH_SHORT).show();
         }
     }
 
     public void conectarAAHC() {
         final ProgressDialog progress = new ProgressDialog(this);
         final AsyncHttpClient ahc = new AsyncHttpClient();
-        ahc.setTimeout(MAX_TIMEOUT);
-        ahc.setMaxRetriesAndTimeout(RETRIES, TIMEOUT_BETWEEN_RETRIES);
-        ahc.get(edtUrl.getText().toString(), new TextHttpResponseHandler() {
+        if (isNetworkAvailable()) {
+            ahc.setTimeout(MAX_TIMEOUT);
+            ahc.setMaxRetriesAndTimeout(RETRIES, TIMEOUT_BETWEEN_RETRIES);
+            ahc.get(edtUrl.getText().toString(), new TextHttpResponseHandler() {
 
-            @Override
-            public void onStart() {
-                progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                progress.setMessage("Cargando página...");
-                progress.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialogInterface) {
-                        ahc.cancelAllRequests(true);
-                        progress.dismiss();
-                    }
-                });
-                progress.show();
-            }
+                @Override
+                public void onStart() {
+                    progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    progress.setMessage("Cargando página...");
+                    progress.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialogInterface) {
+                            ahc.cancelAllRequests(true);
+                            progress.dismiss();
+                        }
+                    });
+                    progress.show();
+                }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                progress.dismiss();
-                Toast.makeText(VerWebActivity.this, "Código de error: " + statusCode, Toast.LENGTH_SHORT).show();
-            }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    progress.dismiss();
+                    Toast.makeText(VerWebActivity.this, "Código de error: " + statusCode, Toast.LENGTH_SHORT).show();
+                }
 
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                wbvPagina.loadData(responseString, "text/html", "UTF-8");
-                progress.dismiss();
-            }
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    wbvPagina.loadData(responseString, "text/html", "UTF-8");
+                    progress.dismiss();
+                }
 
-        });
-
+            });
+        }
     }
 
     public void descargarAAHC() {
         final ProgressDialog progress = new ProgressDialog(this);
         final AsyncHttpClient ahc = new AsyncHttpClient();
-        ahc.setTimeout(MAX_TIMEOUT);
-        ahc.setMaxRetriesAndTimeout(RETRIES, TIMEOUT_BETWEEN_RETRIES);
-        ahc.get(edtUrl.getText().toString(), new TextHttpResponseHandler() {
+        if (isNetworkAvailable()) {
+            ahc.setTimeout(MAX_TIMEOUT);
+            ahc.setMaxRetriesAndTimeout(RETRIES, TIMEOUT_BETWEEN_RETRIES);
+            ahc.get(edtUrl.getText().toString(), new TextHttpResponseHandler() {
 
-            @Override
-            public void onStart() {
-                progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                progress.setMessage("Descargando página a memoria externa...");
-                progress.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialogInterface) {
-                        ahc.cancelAllRequests(true);
-                        progress.dismiss();
-                    }
-                });
-                progress.show();
-            }
+                @Override
+                public void onStart() {
+                    progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    progress.setMessage("Descargando página a memoria externa...");
+                    progress.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialogInterface) {
+                            ahc.cancelAllRequests(true);
+                            progress.dismiss();
+                        }
+                    });
+                    progress.show();
+                }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                progress.dismiss();
-                Toast.makeText(VerWebActivity.this, "Código de error: " + statusCode, Toast.LENGTH_SHORT).show();
-            }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    progress.dismiss();
+                    Toast.makeText(VerWebActivity.this, "Código de error: " + statusCode, Toast.LENGTH_SHORT).show();
+                }
 
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                crearFichero(new File(Environment.getExternalStorageDirectory(), edtNombreFichero.getText().toString()), responseString);
-                progress.dismiss();
-            }
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    crearFichero(new File(Environment.getExternalStorageDirectory(), edtNombreFichero.getText().toString()), responseString);
+                    progress.dismiss();
+                }
 
-        });
+            });
+        }
     }
 
     public void conectarVolley() {
         RequestQueue rq = Volley.newRequestQueue(this);
+        if (isNetworkAvailable()) {
+            StringRequest sr = new StringRequest(StringRequest.Method.GET, edtUrl.getText().toString(),
+                    new Response.Listener<String>() {
 
-        StringRequest sr = new StringRequest(StringRequest.Method.GET, edtUrl.getText().toString(),
-                new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            wbvPagina.loadData(response, "text/html", "UTF-8");
+                        }
+                    },
 
-                    @Override
-                    public void onResponse(String response) {
-                        wbvPagina.loadData(response, "text/html", "UTF-8");
-                    }
-                },
+                    new Response.ErrorListener() {
 
-                new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(VerWebActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
 
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(VerWebActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-        rq.add(sr);
+            rq.add(sr);
+        }
     }
 
     public void descargarVolley() {
         RequestQueue rq = Volley.newRequestQueue(this);
+        if (isNetworkAvailable()) {
+            StringRequest sr = new StringRequest(StringRequest.Method.GET, edtUrl.getText().toString(),
+                    new Response.Listener<String>() {
 
-        StringRequest sr = new StringRequest(StringRequest.Method.GET, edtUrl.getText().toString(),
-                new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            crearFichero(new File(Environment.getExternalStorageDirectory(), edtNombreFichero.getText().toString()), response);
+                        }
+                    },
 
-                    @Override
-                    public void onResponse(String response) {
-                        crearFichero(new File(Environment.getExternalStorageDirectory(), edtNombreFichero.getText().toString()), response);
-                    }
-                },
+                    new Response.ErrorListener() {
 
-                new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(VerWebActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
 
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(VerWebActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+            rq.add(sr);
+        }
+    }
 
-        rq.add(sr);
+    private boolean isNetworkAvailable() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected())
+            return true;
+        else
+            return false;
     }
 }

@@ -28,7 +28,10 @@
         </activity>
         <activity android:name=".AgendaActivity" />
         <activity android:name=".AlarmasActivity" />
-        <activity android:name=".VerWebActivity"></activity>
+        <activity android:name=".VerWebActivity" />
+        <activity android:name=".VerImagenesActivity" />
+        <activity android:name=".ConversorActivity" />
+        <activity android:name=".SubirArchivoActivity"></activity>
     </application>
 
 </manifest>

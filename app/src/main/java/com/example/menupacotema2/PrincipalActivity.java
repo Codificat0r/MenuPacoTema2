@@ -61,13 +61,16 @@ public class PrincipalActivity extends AppCompatActivity implements View.OnClick
                 startActivity(i);
                 break;
             case R.id.btnEjercicio5:
-
+                i = new Intent(PrincipalActivity.this, VerImagenesActivity.class);
+                startActivity(i);
                 break;
             case R.id.btnEjercicio6:
-
+                i = new Intent(PrincipalActivity.this, ConversorActivity.class);
+                startActivity(i);
                 break;
             case R.id.btnEjercicio7:
-
+                i = new Intent(PrincipalActivity.this, SubirArchivoActivity.class);
+                startActivity(i);
                 break;
         }
     }

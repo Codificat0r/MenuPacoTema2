@@ -172,7 +172,7 @@ public class AlarmasActivity extends AppCompatActivity {
                     file.createNewFile();
                 }
                 if (llenos[0]) {
-                    bw.write(edtTiempo1.getText().toString() + "," + edtTexto1.getText().toString());
+                    bw.append(edtTiempo1.getText().toString() + "," + edtTexto1.getText().toString());
                 }
                 if (llenos[1]) {
                     bw.newLine();
