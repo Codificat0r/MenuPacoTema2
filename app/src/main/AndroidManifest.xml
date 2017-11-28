@@ -32,6 +32,7 @@
         <activity android:name=".VerImagenesActivity" />
         <activity android:name=".ConversorActivity" />
         <activity android:name=".SubirArchivoActivity"></activity>
+        <activity android:name=".LectivosActivity"></activity>
     </application>
 
 </manifest>
