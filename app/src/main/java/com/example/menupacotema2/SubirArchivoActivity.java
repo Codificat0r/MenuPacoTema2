@@ -27,7 +27,7 @@ public class SubirArchivoActivity extends AppCompatActivity implements View.OnCl
     private Button btnExplorar;
     private File file;
     private static final int ABRIRFICHERO_REQUEST_CODE = 0;
-    private static final String URL_TO_POST = "http://alumno.mobi/~alumno/superior/cruz/";
+    private static final String URL_TO_POST = "http://alumno.mobi/~alumno/superior/cruz/upload.php";
     private static final int MAX_TIMEOUT = 2000;
     private static final int RETRIES = 1;
     private static final int TIMEOUT_BETWEEN_RETRIES = 5000;
@@ -85,15 +85,15 @@ public class SubirArchivoActivity extends AppCompatActivity implements View.OnCl
                         }
 
                         @Override
-                        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable t) {
                             progreso.dismiss();
-                            Toast.makeText(SubirArchivoActivity.this, "No se ha podido subir el fichero. Código de error: " + statusCode, Toast.LENGTH_LONG).show();
+                            Toast.makeText(SubirArchivoActivity.this, "No se ha podido subir el fichero. Código de error: " + statusCode + ". Mensaje de error: " + t.getMessage(), Toast.LENGTH_LONG).show();
                         }
 
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, String responseString) {
                             progreso.dismiss();
-                            Toast.makeText(SubirArchivoActivity.this, "Fichero subido con éxito", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SubirArchivoActivity.this, "Server: " + responseString, Toast.LENGTH_SHORT).show();
                         }
                     });
                 } catch (FileNotFoundException e) {
